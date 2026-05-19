@@ -1781,7 +1781,8 @@ function Select({
 
       setMenuStyle({
         left: rect.left,
-        top: openUp ? rect.top - maxHeight - gap : rect.bottom + gap,
+        top: openUp ? "auto" : rect.bottom + gap,
+        bottom: openUp ? window.innerHeight - rect.top + gap : "auto",
         width: rect.width,
         maxHeight,
         visibility: "visible",
