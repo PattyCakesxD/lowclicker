@@ -42,6 +42,8 @@ export type TerratierAttributeEntry = {
   id: string;
   attribute: string;
   value: number;
+  slot?: string;
+  source?: "equipped" | "inventory";
 };
 
 export type RepairMode = "default" | "simple" | "detailed";
@@ -366,6 +368,9 @@ export const attributeOptions = [
 export const terratierAttributeOptions = [
   "mining_speed",
   "mining_speed_multiplier",
+  "mining_fortune",
+  "ore_fortune",
+  "crop_fortune",
 ];
 
 export const slotOptions = [
@@ -525,6 +530,23 @@ const toResourceKey = (value: string) =>
 
 const cleanList = (items: string[]) =>
   items.map((item) => item.trim()).filter(Boolean);
+
+const buildTerratierAttributePayload = (
+  attributes: TerratierAttributeEntry[],
+) =>
+  attributes
+    .filter((entry) => isFilled(entry.attribute))
+    .map((entry) =>
+      compactObject({
+        attribute: toResourceKey(entry.attribute).replace(/^terratier:/, ""),
+        value: Number(entry.value) || 0,
+        slot:
+          entry.slot && entry.slot !== "any"
+            ? toResourceKey(entry.slot)
+            : undefined,
+        source: entry.source ?? "equipped",
+      }),
+    );
 
 const compactObject = <T extends Record<string, unknown>>(input: T) => {
   const output: Record<string, unknown> = {};
@@ -747,28 +769,16 @@ export const buildCraftEngineConfig = (state: ItemState) => {
       .map((entry) => [entry.component.trim(), parseYamlValue(entry.value)]),
   );
 
-  const terratierCustomData: Record<string, unknown> = {};
-  state.terratierAttributes.forEach((entry) => {
-    if (isFilled(entry.attribute)) {
-      terratierCustomData[`terratier:${entry.attribute.trim()}`] =
-        Number(entry.value) || 0;
-    }
+  const terratierAttributes = buildTerratierAttributePayload(
+    state.terratierAttributes,
+  );
+  data.pdc = compactObject({
+    "terratier:item_id": itemKey,
+    "terratier:attributes":
+      terratierAttributes.length > 0
+        ? JSON.stringify(terratierAttributes)
+        : undefined,
   });
-
-  if (Object.keys(terratierCustomData).length > 0) {
-    const existingCustomData = customComponents["minecraft:custom_data"];
-    const customData =
-      existingCustomData &&
-      typeof existingCustomData === "object" &&
-      !Array.isArray(existingCustomData)
-        ? existingCustomData
-        : {};
-
-    customComponents["minecraft:custom_data"] = compactObject({
-      ...customData,
-      ...terratierCustomData,
-    });
-  }
 
   if (Object.keys(customComponents).length > 0)
     data.components = customComponents;
@@ -899,7 +909,9 @@ export const buildCraftEngineConfig = (state: ItemState) => {
   }
 
   return {
-    [itemKey]: item,
+    items: {
+      [itemKey]: item,
+    },
   };
 };
 

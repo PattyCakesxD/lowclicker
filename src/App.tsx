@@ -838,6 +838,8 @@ function AdvancedSection({ state, patchState }: ViewProps) {
                       id: createId("terratier"),
                       attribute: "mining_speed",
                       value: 1.0,
+                      slot: "any",
+                      source: "equipped",
                     },
                   ],
                 }))
@@ -850,7 +852,7 @@ function AdvancedSection({ state, patchState }: ViewProps) {
 
           <div className="repeater-list">
             {state.terratierAttributes.map((entry) => (
-              <div className="repeat-row enchant-row" key={entry.id}>
+              <div className="repeat-row terratier-row" key={entry.id}>
                 <Select
                   value={entry.attribute}
                   options={terratierAttributeOptions}
@@ -863,6 +865,22 @@ function AdvancedSection({ state, patchState }: ViewProps) {
                   step={0.1}
                   onChange={(value) =>
                     updateTerratierAttribute(entry.id, { value })
+                  }
+                />
+                <Select
+                  value={entry.slot || "any"}
+                  options={slotOptions}
+                  onChange={(slot) =>
+                    updateTerratierAttribute(entry.id, { slot })
+                  }
+                />
+                <Select
+                  value={entry.source || "equipped"}
+                  options={["equipped", "inventory"]}
+                  onChange={(source) =>
+                    updateTerratierAttribute(entry.id, {
+                      source: source as TerratierAttributeEntry["source"],
+                    })
                   }
                 />
                 <RemoveButton
