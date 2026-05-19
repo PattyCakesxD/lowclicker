@@ -49,7 +49,6 @@ import {
   formatAttributeAmount,
   groupAttributesBySlot,
   type AttributeEntry,
-  type BehaviorType,
   type ComponentEntry,
   type EnchantmentEntry,
   type ItemState,
