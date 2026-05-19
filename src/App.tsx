@@ -54,12 +54,13 @@ import {
   type ItemState,
   type LoreLine,
   type TextStyle,
+  type BehaviorType,
   terratierAttributeOptions,
   type TerratierAttributeEntry,
   soundOptions,
   trimPatternOptions,
   trimMaterialOptions,
-  potionEffectOptions,
+  blockOptions,
 } from "./lib/craftEngine";
 import "./App.css";
 
@@ -1281,7 +1282,7 @@ function AdvancedSection({ state, patchState }: ViewProps) {
                 "compostable_item",
               ]}
               onChange={(behaviorType) =>
-                patchState({ behaviorType: behaviorType as any })
+                patchState({ behaviorType: behaviorType as BehaviorType })
               }
             />
           </Field>
@@ -1908,7 +1909,7 @@ function Select({
       filtered = options.filter((opt) => opt.toLowerCase().includes(lowerSearch));
     }
     return filtered;
-  }, [options, search, value]);
+  }, [options, search]);
 
   useEffect(() => {
     if (!open) {
