@@ -299,6 +299,7 @@ export const terratierAttributeOptions = [
   "mining_speed",
   "mining_speed_multiplier",
   "fortune",
+  "luck",
 ];
 
 export const slotOptions = [
